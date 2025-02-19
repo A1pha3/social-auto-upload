@@ -32,6 +32,8 @@ social-auto-upload This project aims to automate the posting of videos to variou
 
 # 💾Installation
 ```
+python -m venv env_up
+source env_up/bin/activate
 pip install -r requirements.txt
 playwright install chromium firefox
 ```
@@ -218,14 +220,17 @@ https://github.com/requireCool/stealth.min.js
 该实现，借助biliup的[biliup-rs](https://github.com/biliup/biliup-rs)，再次感谢。
 1. 准备视频目录结构
 2. cookie获取：`biliup.exe -u account.json login` 选项你喜欢的登录方式
-![登录方式](media/get_bili_cookie.png) 
-3. 上传视频：upload_video_to_bilibili.py
+![登录方式](media/get_bili_cookie.png)  登录后，会在当前目录下生成文件account.json，需要文件拷贝到cookies/bilibili_uploader/目录下
+3. 上传视频文件：examples/upload_video_to_bilibili.py
+4. 进入项目根目录，运行: python -m example.upload_video_to_bilibili
 
 #### 解释与注意事项：
 
 ```
 bilibili cookie 长期有效（至少我运行2年以来是这样的）
-其他平台 诸如linux mac 服务器运行 请自行研究
+原项目中的biliup.exe是windows平台的，我已经删除，换成mac平台的biliup
+需要其它平台的，去参考项目中的地址中下载对应平台的biliup即可.
+
 ```
 参考项目：
 - https://github.com/biliup/biliup-rs
