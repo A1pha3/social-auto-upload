@@ -1,3 +1,7 @@
+# Alpha ignore file
+*.png 
+updone.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
