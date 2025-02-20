@@ -44,29 +44,29 @@ def get_mp4_files(video_path):
 
 def update_up_done_file(filename):
     """
-    将成功处理的文件名写入up_done.txt文件。
+    将成功处理的文件名写入updone.txt文件。
     Args:
         filename (str): 成功处理的mp4文件名（不包含路径，仅文件名）。
     """
-    up_done_file_path = 'up_done.txt' # up_done.txt 文件路径，相对于脚本所在目录
+    up_done_file_path = 'updone.txt' # updone.txt 文件路径，相对于脚本所在目录
     try:
-        with open(up_done_file_path, 'a', encoding='utf-8') as f: # 以追加模式打开up_done.txt文件
+        with open(up_done_file_path, 'a', encoding='utf-8') as f: # 以追加模式打开updone.txt文件
             f.write(filename + '\n') # 将文件名写入文件，并添加换行符
     except Exception as e: # 捕获文件写入可能发生的异常
         print(f"警告: 写入 {up_done_file_path} 文件时发生错误: {e}") # 打印警告信息
 
 def load_up_done_files():
     """
-    加载up_done.txt文件中已处理的文件名到集合中。
+    加载updone.txt文件中已处理的文件名到集合中。
     如果文件不存在则创建。
 
     Returns:
         set: 已处理的文件名集合。
     """
-    up_done_file_path = 'up_done.txt' # up_done.txt 文件路径，相对于脚本所在目录
+    up_done_file_path = 'updone.txt' # updone.txt 文件路径，相对于脚本所在目录
     up_done_files = set() # 初始化一个空的集合，用于存储已处理的文件名
 
-    if os.path.exists(up_done_file_path): # 检查up_done.txt文件是否存在
+    if os.path.exists(up_done_file_path): # 检查updone.txt文件是否存在
         try:
             with open(up_done_file_path, 'r', encoding='utf-8') as f: # 以只读模式打开文件，指定UTF-8编码
                 for line in f: # 逐行读取文件内容
@@ -78,7 +78,7 @@ def load_up_done_files():
     else:
         try:
             current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # 获取当前时间并格式化
-            with open(up_done_file_path, 'w', encoding='utf-8') as f: # 创建新的up_done.txt文件
+            with open(up_done_file_path, 'w', encoding='utf-8') as f: # 创建新的updone.txt文件
                 f.write(f"Doing task started at: {current_time}\n") # 写入包含开始时间的文本
 
             print(f"{up_done_file_path} 文件不存在，已创建。时间：{current_time}") # 打印文件创建信息
@@ -113,7 +113,7 @@ if __name__ == '__main__':
         sys.exit(1) # 退出程序，返回错误代码 1
 
 
-    sleep_time = 36
+    sleep_time = 188
     #filepath = Path(BASE_DIR) / "videos"
     # how to get cookie, see the file of get_bilibili_cookie.py.
     account_file = Path(BASE_DIR / "cookies" / "bilibili_uploader" / "account.json")
@@ -138,11 +138,14 @@ if __name__ == '__main__':
 
         up_done_files = load_up_done_files() # 加载已处理的文件名列表
         if not up_done_files:
-            print("up_done.txt 文件创建失败，程序退出。")
+            print("updone.txt 文件创建失败，程序退出。")
             sys.exit(3)
         
         for index, video_file in enumerate(video_files):
             filename = os.path.basename(video_file) # 提取文件名 (不包含路径)
+            if filename.startswith("._"): # 检查文件名是否以"._"开头
+                print(f"文件 {filename} 是临时文件，跳过。") # 打印临时文件信息
+                continue
             if filename not in up_done_files: # 检查文件是否已处理过
             # 获取视频标题和txt 文件名
                 title = filename.replace(".mp4", "")
@@ -157,7 +160,7 @@ if __name__ == '__main__':
                 #bili_uploader = BilibiliUploader(cookie_data, file, title, desc, tid, tags, timestamps[index])
                 bili_uploader = BilibiliUploader(cookie_data, video_file, title, desc, tid, tags, None)
                 bili_uploader.upload()
-                update_up_done_file(filename) # 处理成功，更新up_done.txt文件
+                update_up_done_file(filename) # 处理成功，更新updone.txt文件
                 # life is beautiful don't so rush. be kind be patience
                 print(f"----sleep time：{sleep_time}")
                 time.sleep(sleep_time)

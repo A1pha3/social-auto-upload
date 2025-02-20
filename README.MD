@@ -221,6 +221,7 @@ https://github.com/requireCool/stealth.min.js
 1. 准备视频目录结构
 2. cookie获取：`biliup.exe -u account.json login` 选项你喜欢的登录方式
 ![登录方式](media/get_bili_cookie.png)  登录后，会在当前目录下生成文件account.json，需要文件拷贝到cookies/bilibili_uploader/目录下
+一个命令：uploader/bilibili_uploader/biliup -u cookies/bilibili_uploader/account.json login
 3. 上传视频文件：examples/upload_video_to_bilibili.py
 4. 进入项目根目录，运行: python -m example.upload_video_to_bilibili
 
