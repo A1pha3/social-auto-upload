@@ -113,7 +113,8 @@ if __name__ == '__main__':
         sys.exit(1) # 退出程序，返回错误代码 1
 
 
-    sleep_time = 188
+    sleep_time = 3588 # 设置休眠时间为3588秒 (约59分钟)
+    #sleep_time = 23976 # 设置休眠时间为23976秒 (约6.66Hour)
     #filepath = Path(BASE_DIR) / "videos"
     # how to get cookie, see the file of get_bilibili_cookie.py.
     account_file = Path(BASE_DIR / "cookies" / "bilibili_uploader" / "account.json")
@@ -167,6 +168,6 @@ if __name__ == '__main__':
             else:
                 print(f"文件 {filename} 已处理过，跳过。") # 打印文件已处理信息
 
-        print(f"所有文件处理完成，休眠2小时... {time.strftime('%Y-%m-%d %H:%M:%S')}") # 打印休眠信息和当前时间
-        time.sleep(2 * 3600) # 休眠2小时 (2 * 60 * 60 秒)
+        print(f"------------所有文件处理完成，休眠3小时... {time.strftime('%Y-%m-%d %H:%M:%S')}") # 打印休眠信息和当前时间
+        time.sleep(3*3600) # 休眠2小时 (2 * 60 * 60 秒)
 
