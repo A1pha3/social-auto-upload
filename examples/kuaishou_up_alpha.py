@@ -164,6 +164,9 @@ if __name__ == '__main__':
 
     config_file_path = args.config_file # 获取命令行参数指定的视频文件夹路径
     video_path_set = parse_config_file(config_file_path) # 解析配置文件，获取视频文件路径集合
+    if video_path_set == None:
+        print("video_path_set is None,  so exit.")
+        sys.exit(1)
 
     sleep_time = 1388 # 设置休眠时间为3588秒 (约59分钟)
     #sleep_time = 23976 # 设置休眠时间为23976秒 (约6.66Hour)
@@ -203,7 +206,7 @@ if __name__ == '__main__':
                     title = "热舞"
                     #title = filename.replace(".mp4", "")
                     print(f"-------上传视频文件名：{filename} 标题：{title} --------------")
-                    app = KSVideo(title, video_file, tags, 0, account_file)
+                    app = KSVideo(title, video_file, tags, None, account_file)
                     asyncio.run(app.main(), debug=False)
                     update_up_done_file(filename, video_path_name) # 处理成功，更新updone.txt文件
                     # life is beautiful don't so rush. be kind be patience

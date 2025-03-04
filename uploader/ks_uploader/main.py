@@ -4,6 +4,7 @@ from datetime import datetime
 from playwright.async_api import Playwright, async_playwright
 import os
 import asyncio
+from typing import Optional
 
 from conf import LOCAL_CHROME_PATH
 from utils.base_social_media import set_init_script
@@ -62,7 +63,7 @@ async def get_ks_cookie(account_file):
 
 
 class KSVideo(object):
-    def __init__(self, title, file_path, tags, publish_date: datetime, account_file):
+    def __init__(self, title, file_path, tags, publish_date: Optional[datetime], account_file):
         self.title = title  # 视频标题
         self.file_path = file_path
         self.tags = tags
@@ -160,7 +161,7 @@ class KSVideo(object):
             kuaishou_logger.warning("超过最大重试次数，视频上传可能未完成。")
 
         # 定时任务
-        if self.publish_date != 0:
+        if self.publish_date != None:
             await self.set_schedule_time(page, self.publish_date)
 
         # 判断视频是否发布成功
@@ -193,7 +194,7 @@ class KSVideo(object):
         # 关闭浏览器上下文和浏览器实例
         await context.close()
         await browser.close()
-        #await asyncio.sleep(3)  # 这里延迟是为了等待关闭成功
+        await asyncio.sleep(3)  # 这里延迟是为了等待关闭成功
 
     async def main(self):
         async with async_playwright() as playwright:
