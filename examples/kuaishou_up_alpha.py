@@ -169,10 +169,14 @@ if __name__ == '__main__':
     #sleep_time = 23976 # 设置休眠时间为23976秒 (约6.66Hour)
 
     account_file = Path(BASE_DIR / "cookies" / "ks_uploader" / "account.json")
+    cookie_setup = asyncio.run(ks_setup(account_file, handle=True))
+    if not cookie_setup:
+        print("KS cookie setup failed, program exit.")
+        sys.exit(2)
 
-    tags = ["#热舞", "#健康减脂 ", "#完美身材 ", "#火爆现场 ", "#拉拉队美女 "]
+    tags = ["健康减脂", "美女", "完美身材", "火爆现场", ]
 
-    print(f" -- sleeptime:{sleep_time} tags：{tags}")
+    print(f" -- sleeptime:{sleep_time} ----tags：{tags}")
     print(f"程序启动，config: {config_file_path} -- video_path:{video_path_set}--")
     while True: # 无限循环，持续执行文件上传逻辑
         for video_path in video_path_set:
@@ -182,10 +186,6 @@ if __name__ == '__main__':
             video_files = list(folder_path.glob("*.mp4"))
             file_num = len(video_files)
             #publish_datetimes = generate_schedule_time_next_day(file_num, 1, daily_times=[16])
-            cookie_setup = asyncio.run(ks_setup(account_file, handle=False))
-            if not cookie_setup:
-                print("KS cookie setup failed, program exit.")
-                sys.exit(2)
             video_path_name = generate_filename_from_path(video_path) # 根据路径生成文件名 
             up_done_files = load_up_done_files(video_path_name) # 读取updone.txt，加载已处理的文件名列表
             if not up_done_files:
@@ -200,9 +200,8 @@ if __name__ == '__main__':
                     continue
 
                 if filename not in up_done_files: # 检查文件是否已处理过
-                    title = "拉拉队热舞" + time.strftime('%Y-%m-%d %H:%M:%S')
+                    title = "热舞"
                     #title = filename.replace(".mp4", "")
-
                     print(f"-------上传视频文件名：{filename} 标题：{title} --------------")
                     app = KSVideo(title, video_file, tags, 0, account_file)
                     asyncio.run(app.main(), debug=False)

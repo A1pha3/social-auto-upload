@@ -272,6 +272,9 @@ Parameter explanation:
 - https://github.com/wkaisertexas/tiktok-uploader
 
 ---
+### 6. kuaishou
+- 注意，如果是新注册的账号，一定要手工上传一个，跳过tour，否则上传会报错
+
 
 ### 其余部分(todo)
 整理后上传

@@ -134,7 +134,7 @@ class KSVideo(object):
         for index, tag in enumerate(self.tags[:3], start=1):
             kuaishou_logger.info("正在添加第%s个话题" % index)
             await page.keyboard.type(f"#{tag} ")
-            await asyncio.sleep(2)
+            await asyncio.sleep(3)
 
         max_retries = 60  # 设置最大重试次数,最大等待时间为 2 分钟
         retry_count = 0
@@ -150,10 +150,10 @@ class KSVideo(object):
                 else:
                     if retry_count % 5 == 0:
                         kuaishou_logger.info("正在上传视频中...")
-                    await asyncio.sleep(2)
+                    await asyncio.sleep(3)
             except Exception as e:
                 kuaishou_logger.error(f"检查上传状态时发生错误: {e}")
-                await asyncio.sleep(2)  # 等待 2 秒后重试
+                await asyncio.sleep(3)  # 等待 2 秒后重试
             retry_count += 1
 
         if retry_count == max_retries:
@@ -189,10 +189,11 @@ class KSVideo(object):
 
         await context.storage_state(path=self.account_file)  # 保存cookie
         kuaishou_logger.info('cookie更新完毕！')
-        await asyncio.sleep(2)  # 这里延迟是为了方便眼睛直观的观看
+        await asyncio.sleep(3)  # 这里延迟是为了方便眼睛直观的观看
         # 关闭浏览器上下文和浏览器实例
         await context.close()
         await browser.close()
+        #await asyncio.sleep(3)  # 这里延迟是为了等待关闭成功
 
     async def main(self):
         async with async_playwright() as playwright:
