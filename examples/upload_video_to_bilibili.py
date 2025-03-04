@@ -6,10 +6,12 @@ import datetime
 import argparse
 from pathlib import Path
 
-from uploader.bilibili_uploader.main import read_cookie_json_file, extract_keys_from_json, random_emoji, BilibiliUploader
+#from uploader.bilibili_uploader.main import random_emoji
+from uploader.bilibili_uploader.main import read_cookie_json_file, extract_keys_from_json, BilibiliUploader
 from conf import BASE_DIR
 from utils.constant import VideoZoneTypes
-from utils.files_times import generate_schedule_time_next_day, get_title_and_hashtags
+#from utils.files_times import get_title_and_hashtags
+from utils.files_times import generate_schedule_time_next_day 
 
 def wait_for_doing_file(video_path):
     """
@@ -175,7 +177,8 @@ if __name__ == '__main__':
     cookie_data = read_cookie_json_file(account_file)
     cookie_data = extract_keys_from_json(cookie_data)
     tid = VideoZoneTypes.TECH_COMPUTER_TECH.value  # 设置分区id
-    tags = ["#区块链", "#blockchain", "#cryptocoin", "#数字货币", "#加密货币"]
+    #tags = ["#区块链", "#blockchain", "#cryptocoin", "#数字货币", "#加密货币"]
+    tags = ["#热舞", "#健康减脂 ", "#完美身材 ", "#火爆现场 ", "#拉拉队美女 "]
     tags_str = ','.join([tag for tag in tags])
     print(f"Zone Type: {tid} Hashtag：{tags}")
     print("-----程序启动，开始循环检测...") # 打印程序启动信息
