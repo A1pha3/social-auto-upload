@@ -178,6 +178,7 @@ if __name__ == '__main__':
     cookie_data = extract_keys_from_json(cookie_data)
     tid = VideoZoneTypes.TECH_COMPUTER_TECH.value  # 设置分区id
     #tags = ["#区块链", "#blockchain", "#cryptocoin", "#数字货币", "#加密货币"]
+    #tags = ["#佩奇", "#儿童动画 ", "#启蒙早教 ", "#英语启蒙 ", "#peppapig"]
     tags = ["#热舞", "#健康减脂 ", "#完美身材 ", "#火爆现场 ", "#拉拉队美女 "]
     tags_str = ','.join([tag for tag in tags])
     print(f"Zone Type: {tid} Hashtag：{tags}")
