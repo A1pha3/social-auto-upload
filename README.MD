@@ -228,7 +228,7 @@ https://github.com/requireCool/stealth.min.js
 #### 解释与注意事项：
 
 ```
-bilibili cookie 长期有效（至少我运行2年以来是这样的）
+bilibili cookie 长期有效
 原项目中的biliup.exe是windows平台的，我已经删除，换成mac平台的biliup
 需要其它平台的，去参考项目中的地址中下载对应平台的biliup即可.
 
