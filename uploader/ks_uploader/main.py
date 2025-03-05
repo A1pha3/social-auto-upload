@@ -35,6 +35,7 @@ async def ks_setup(account_file, handle=False):
     account_file = get_absolute_path(account_file, "ks_uploader")
     if not os.path.exists(account_file) or not await cookie_auth(account_file):
         if not handle:
+            kuaishou_logger.info('[+] cookie文件不存或已失效，因为handle为False，所以不去登录')
             return False
         kuaishou_logger.info('[+] cookie文件不存在或已失效，即将自动打开浏览器，请扫码登录，登陆后会自动生成cookie文件')
         await get_ks_cookie(account_file)
@@ -90,7 +91,7 @@ class KSVideo(object):
             )  # 创建一个浏览器上下文，使用指定的 cookie 文件
         context = await browser.new_context(storage_state=f"{self.account_file}")
         context = await set_init_script(context)
-        context.on("close", lambda: context.storage_state(path=self.account_file))
+        #context.on("close", lambda: context.storage_state(path=self.account_file))
 
         # 创建一个新的页面
         page = await context.new_page()
@@ -193,7 +194,9 @@ class KSVideo(object):
         await asyncio.sleep(3)  # 这里延迟是为了方便眼睛直观的观看
         # 关闭浏览器上下文和浏览器实例
         await context.close()
+        kuaishou_logger.info('context关闭完毕！')
         await browser.close()
+        kuaishou_logger.info('浏览器关闭完毕！')
         await asyncio.sleep(3)  # 这里延迟是为了等待关闭成功
 
     async def main(self):

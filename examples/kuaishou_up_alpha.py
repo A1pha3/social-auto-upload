@@ -168,7 +168,8 @@ if __name__ == '__main__':
         print("video_path_set is None,  so exit.")
         sys.exit(1)
 
-    sleep_time = 1388 # 设置休眠时间为3588秒 (约59分钟)
+    #sleep_time = 3588 # 设置休眠时间为3588秒 (约59分钟)
+    sleep_time = 13986 # 设置休眠时间为13968秒 (约232.78 Minutes, 约3.88 hours)
     #sleep_time = 23976 # 设置休眠时间为23976秒 (约6.66Hour)
 
     account_file = Path(BASE_DIR / "cookies" / "ks_uploader" / "account.json")
@@ -180,7 +181,7 @@ if __name__ == '__main__':
     tags = ["健康减脂", "美女", "完美身材", "火爆现场", ]
 
     print(f" -- sleeptime:{sleep_time} ----tags：{tags}")
-    print(f"程序启动，config: {config_file_path} -- video_path:{video_path_set}--")
+    print(f"-----程序启动，config: {config_file_path} -- video_path:{video_path_set}----")
     while True: # 无限循环，持续执行文件上传逻辑
         for video_path in video_path_set:
             wait_for_doing_file(video_path)   # 检测doing.txt文件是否存在，存在则等待
@@ -205,12 +206,12 @@ if __name__ == '__main__':
                 if filename not in up_done_files: # 检查文件是否已处理过
                     title = "热舞"
                     #title = filename.replace(".mp4", "")
-                    print(f"-------上传视频文件名：{filename} 标题：{title} --------------")
+                    print(f"-------上传视频文件名：{filename} -----标题：{title} ------------")
                     app = KSVideo(title, video_file, tags, None, account_file)
-                    asyncio.run(app.main(), debug=False)
+                    asyncio.run(app.main(), debug=True)
                     update_up_done_file(filename, video_path_name) # 处理成功，更新updone.txt文件
                     # life is beautiful don't so rush. be kind be patience
-                    print(f"----sleep time：{sleep_time}----wait to process next file----")
+                    print(f"---------wait to process next file--------sleep time：{sleep_time}-----")
                     time.sleep(sleep_time)
  
             print(f"\n-------process video_path：{video_path}-----done-------\n")

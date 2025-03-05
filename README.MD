@@ -273,7 +273,10 @@ Parameter explanation:
 
 ---
 ### 6. kuaishou
-- 注意，如果是新注册的账号，一定要手工上传一个，跳过tour，否则上传会报错
+- example的快手上传程序，第一次执行需要把ks_setup函数中的handle参数设置为true，否则不会去获取cookie
+  如果设置了，会自动打开浏览器，扫码登录，获取cookie，登录后，点击playwright的继续按钮，
+  会保存cookie到项目目录下的cookies/ks_uploader/account.json中
+- 注意，如果是新注册的账号，一定要在页面中手工上传一个，跳过tour，否则上传会报错
 
 
 ### 其余部分(todo)
