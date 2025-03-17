@@ -196,7 +196,7 @@ if __name__ == '__main__':
                 print("updone.txt 文件创建失败，程序退出。")
                 sys.exit(3)
         
-            print(f"\n-------process video_path：{video_path}-----start-------\n")
+            print(f"-------process video_path：{video_path}-----start-------")
             for index, video_file in enumerate(video_files):
                 filename = os.path.basename(video_file) # 提取文件名 (不包含路径)
                 if filename.startswith("._"): # 检查文件名是否以"._"开头
@@ -221,7 +221,7 @@ if __name__ == '__main__':
                 #else:
                 #    print(f"文件 {filename} 已处理过，跳过。") # 打印文件已处理信息
 
-            print(f"\n-------process video_path：{video_path}-----done-------\n")
+            print(f"-------process video_path：{video_path}-----done-------\n")
         print(f"所有文件处理完成，休眠1小时... {time.strftime('%Y-%m-%d %H:%M:%S')}") # 打印休眠信息和当前时间
         time.sleep(1 * 3600) # 休眠1小时 (1 * 60 * 60 秒)
 
