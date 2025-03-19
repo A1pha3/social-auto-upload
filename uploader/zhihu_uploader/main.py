@@ -201,7 +201,7 @@ class ZhihuArticle:
                 if i % 10 == 0 and i > 0:
                     zhihu_logger.info(f"仍在等待验证完成...已等待{i}秒")
             
-            zhihu_logger.error("人机验证超时，请检查浏览器状态")
+            zhihu_logger.error("人机验证超时，请检查浏览器状态")   
             return False
         
         return True  # 没有验证页面，直接返回成功
@@ -407,40 +407,85 @@ class ZhihuArticle:
                 zhihu_logger.warning('无法导入或粘贴内容，尝试手动输入标题后继续...')
             
             if len(self.tags) > 0:
-                tag_buttons = ["div:has-text('添加话题')", ".WriteIndex-tagLine", "button:has-text('添加话题')"]
+                # 修改选择器列表，使用更精确的选择器
+                tag_buttons = [
+                    "div.css-8op9h6",  # 更精确的选择器，从错误信息中获取
+                    "div.css-4cffwv",  # 另一个精确的选择器
+                    "div.css-be2u3 > div:has-text('添加话题')",  # 更具体的路径
+                    ".WriteIndex-tagLine button",  # 更精确的按钮选择器
+                    "button:has-text('添加话题')"  # 按钮更可能是唯一的
+                ]
                 tag_button_found = False
                 
+                # 添加更多日志以便更好地理解执行过程
+                zhihu_logger.info(f'开始添加话题，总共 {len(self.tags)} 个话题')
+                
                 for tag_button_selector in tag_buttons:
-                    if await page.locator(tag_button_selector).count() > 0:
-                        await page.locator(tag_button_selector).click()
-                        await page.wait_for_timeout(1000)
-                        tag_button_found = True
-                        
-                        for tag in self.tags[:5]:
-                            tag_inputs = ["input.css-1ssna7n", ".WriteIndex-addTagInput", "input[placeholder='搜索话题']"]
-                            tag_input_found = False
+                    try:
+                        count = await page.locator(tag_button_selector).count()
+                        if count > 0:
+                            zhihu_logger.info(f'找到添加话题按钮，使用选择器: {tag_button_selector}')
+                            await page.click(tag_button_selector, timeout=5000)
+                            # 增加更长的等待时间，确保话题对话框完全打开
+                            await page.wait_for_timeout(3000)
+                            tag_button_found = True
                             
-                            for tag_input_selector in tag_inputs:
-                                if await page.locator(tag_input_selector).count() > 0:
-                                    tag_input = page.locator(tag_input_selector)
-                                    await tag_input.fill(tag)
-                                    await page.wait_for_timeout(2000)
-                                    tag_input_found = True
-                                    
-                                    result_selectors = ["div.css-1j6tmgm", ".WriteIndex-searchTagItem", "[role='option']"]
-                                    for result_selector in result_selectors:
-                                        if await page.locator(result_selector).count() > 0:
-                                            await page.locator(result_selector).click()
-                                            await page.wait_for_timeout(1000)
+                            for tag in self.tags[:5]:
+                                zhihu_logger.info(f'尝试添加话题: {tag}')
+                                # 更新并扩展选择器列表，包含更多可能的选择器
+                                tag_inputs = [
+                                    "input.css-1ssna7n", 
+                                    ".WriteIndex-addTagInput", 
+                                    "input[placeholder='搜索话题']",
+                                    ".css-m5igqv input",
+                                    ".Input-wrapper input",
+                                    "input.Input",
+                                    "input:focus",
+                                    "div.SearchBar-input input"
+                                ]
+                                tag_input_found = False
+                                
+                                for tag_input_selector in tag_inputs:
+                                    try:
+                                        count = await page.locator(tag_input_selector).count()
+                                        if count > 0:
+                                            zhihu_logger.info(f'找到话题输入框，使用选择器: {tag_input_selector}')
+                                            await page.locator(tag_input_selector).fill(tag)
+                                            # 按下回车键，有些情况下可能需要这个来触发搜索
+                                            await page.keyboard.press("Enter")
+                                            # 增加等待时间，确保搜索结果完全加载
+                                            await page.wait_for_timeout(3000)
+                                            tag_input_found = True
+                                            
+                                            result_selectors = ["div.css-1j6tmgm", ".WriteIndex-searchTagItem", "[role='option']"]
+                                            result_found = False
+                                            for result_selector in result_selectors:
+                                                try:
+                                                    count = await page.locator(result_selector).count()
+                                                    if count > 0:
+                                                        zhihu_logger.info(f'找到话题搜索结果，使用选择器: {result_selector}')
+                                                        await page.click(result_selector, timeout=5000)
+                                                        result_found = True
+                                                        break
+                                                except Exception as e:
+                                                    zhihu_logger.error(f'点击话题搜索结果失败: {e}')
+                                            
+                                            if not result_found:
+                                                zhihu_logger.warning(f'未找到话题搜索结果: {tag}')
                                             break
-                                    break
-                            
-                            if not tag_input_found:
-                                zhihu_logger.warning(f'未找到标签输入框，跳过添加标签 "{tag}"')
-                        break
+                                    except Exception as e:
+                                        zhihu_logger.error(f'填充话题搜索框失败: {e}')
+                                
+                                if not tag_input_found:
+                                    zhihu_logger.warning(f'未找到标签输入框，跳过添加标签 "{tag}"')
+                            break
+                    except Exception as e:
+                        zhihu_logger.error(f'点击添加话题按钮失败：{e}')
                 
                 if not tag_button_found:
                     zhihu_logger.warning('未找到添加话题按钮，跳过添加标签')
+            else:
+                zhihu_logger.info('没有话题需要添加，跳过')
             
             if self.publish_date is not None:
                 await self.set_schedule_time(page, self.publish_date)
