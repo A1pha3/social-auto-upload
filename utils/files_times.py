@@ -38,6 +38,38 @@ def get_title_and_hashtags(filename):
     return title, hashtags
 
 
+def generate_filename_from_path(file_path):
+    """
+    根据文件路径生成文件名，处理特殊路径情况。
+    
+    Args:
+        file_path (str): 文件路径，例如 "/damon/sun", "/damon/sun/articles", "/damon/sun/blogs"。
+        
+    Returns:
+        str: 生成的文件名，例如 "sun", "sun_articles", "sun_blogs"。
+             如果路径为空或无法处理，则返回 None。
+    """
+    if not file_path:
+        return None
+
+    file_path = file_path.strip('/')
+
+    base_name = Path(file_path).name
+    dir_name = str(Path(file_path).parent)
+
+    if not dir_name or dir_name == '.':
+        return base_name
+
+    parent_dir_name = Path(dir_name).name
+
+    if base_name == "articles":
+        return f"{parent_dir_name}_articles"
+    elif base_name == "blogs":
+        return f"{parent_dir_name}_blogs"
+    else:
+        return base_name
+
+
 def generate_schedule_time_next_day(total_videos, videos_per_day, daily_times=None, timestamps=False, start_days=0):
     """
     Generate a schedule for video uploads, starting from the next day.
