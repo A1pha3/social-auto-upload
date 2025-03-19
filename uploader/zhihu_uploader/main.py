@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 import os
-import asyncio
 import json
 import time
 from datetime import datetime
 from typing import Optional, List
-from pathlib import Path
+#from pathlib import Path
 import traceback
 
 from playwright.async_api import Playwright, async_playwright
-import markdown
+#import markdown
 
-from conf import BASE_DIR, LOCAL_CHROME_PATH
+from conf import LOCAL_CHROME_PATH
 from utils.base_social_media import set_init_script
 from utils.files_times import get_absolute_path
 from utils.log import zhihu_logger
