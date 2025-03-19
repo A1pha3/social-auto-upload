@@ -311,15 +311,15 @@ class ZhihuArticle:
                 "div.notranslate[contenteditable='true']"
             ]
             
-            title_input = None
+            title_input_selector = None
             for selector in title_selectors:
                 if await page.locator(selector).count() > 0:
-                    title_input = page.locator(selector).first()
+                    title_input_selector = selector
                     zhihu_logger.info(f'找到标题输入框，使用选择器: {selector}')
                     break
             
-            if title_input:
-                await title_input.click()
+            if title_input_selector:
+                await page.locator(title_input_selector).click()
                 await page.keyboard.press("Control+KeyA")
                 await page.keyboard.press("Delete")
                 await page.keyboard.type(self.title)
@@ -430,7 +430,7 @@ class ZhihuArticle:
                                     result_selectors = ["div.css-1j6tmgm", ".WriteIndex-searchTagItem", "[role='option']"]
                                     for result_selector in result_selectors:
                                         if await page.locator(result_selector).count() > 0:
-                                            await page.locator(result_selector).first().click()
+                                            await page.locator(result_selector).click()
                                             await page.wait_for_timeout(1000)
                                             break
                                     break
