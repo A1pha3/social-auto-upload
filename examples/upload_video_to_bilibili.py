@@ -13,6 +13,29 @@ from utils.constant import VideoZoneTypes
 #from utils.files_times import get_title_and_hashtags
 from utils.files_times import generate_schedule_time_next_day 
 
+def process_filename(video_file):
+    """提取用于测试的文件名处理逻辑
+    
+    Args:
+        video_file (str): 文件路径或文件名
+        
+    Returns:
+        str: 处理后的文件名，去除扩展名和最后一个下划线后缀
+    """
+    # 规范化路径分隔符，确保跨平台兼容性
+    video_file = video_file.replace('\\', '/')
+    
+    # 获取基本文件名（不含路径和扩展名）
+    base_name = os.path.splitext(os.path.basename(video_file))[0]
+    
+    # 处理下划线情况
+    if '_' in base_name:
+        parts = base_name.rsplit('_', 1)
+        # 特殊情况：如果分割后左侧为空（例如 _.mp4），保留原始基本名
+        return parts[0] if parts[0] else base_name
+    
+    return base_name
+
 def wait_for_doing_file(video_path):
     """
     循环检测指定目录下doing.txt文件是否存在，如果存在则等待。
@@ -151,9 +174,29 @@ def generate_filename_from_path(file_path):
         return base_name #  默认情况，使用basename作为文件名
 
 def truncate_title_string(s):
+    """截断过长的标题字符串
+    
+    Args:
+        s (str): 原始字符串
+        
+    Returns:
+        str: 截断后的字符串，最大长度为80
+    """
     if len(s) > 80:
         return s[:80]
     return s
+
+def process_video_title(video_file):
+    """从视频文件名生成格式化的视频标题
+    
+    Args:
+        video_file (str): 视频文件路径或文件名
+        
+    Returns:
+        str: 处理并截断后的视频标题
+    """
+    base_name = process_filename(video_file)
+    return truncate_title_string(base_name)
 
 if __name__ == '__main__':
     # 创建命令行参数解析器
@@ -203,15 +246,11 @@ if __name__ == '__main__':
                     #print(f"文件 {filename} 是临时文件，跳过。") # 打印临时文件信息
                     continue
                 if filename not in up_done_files: # 检查文件是否已处理过
-                    title = filename.replace(".mp4", "")
-                    #title, tags = get_title_and_hashtags(str(file))
-                    # just avoid error, bilibili don't allow same title of video.
-                    #title += random_emoji()
-                    title = truncate_title_string(title)
+                    title = process_video_title(video_file)
+                    print(f"原始文件名处理：{os.path.basename(video_file)} → {title}")
                     print(f"上传视频文件名：{filename} 标题：{title}")
                     # I set desc same as title, do what u like.
                     desc = title
-                    #bili_uploader = BilibiliUploader(cookie_data, file, title, desc, tid, tags, timestamps[index])
                     bili_uploader = BilibiliUploader(cookie_data, video_file, title, desc, tid, tags, None)
                     bili_uploader.upload()
                     update_up_done_file(filename, video_path_name) # 处理成功，更新updone.txt文件
@@ -224,4 +263,3 @@ if __name__ == '__main__':
             print(f"\n-------process video_path：{video_path}-----done-------\n")
         print(f"所有文件处理完成，休眠1小时... {time.strftime('%Y-%m-%d %H:%M:%S')}") # 打印休眠信息和当前时间
         time.sleep(1 * 3600) # 休眠1小时 (1 * 60 * 60 秒)
-
