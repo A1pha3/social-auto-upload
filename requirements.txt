@@ -8,3 +8,4 @@ xhs
 qrcode
 loguru
 markdown
+toml

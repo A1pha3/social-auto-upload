@@ -165,7 +165,8 @@ if __name__ == '__main__':
 
     video_path_set = parse_config_file(config_file_path) # 解析配置文件，获取视频文件路径集合
 
-    sleep_time = 1388 # 设置休眠时间为3588秒 (约59分钟)
+    #sleep_time = 1388 # 设置休眠时间为3588秒 (约59分钟)
+    sleep_time = 10368 # 设置休眠时间约2.88 Hour
     #sleep_time = 23976 # 设置休眠时间为23976秒 (约6.66Hour)
     # how to get cookie, see the file of get_bilibili_cookie.py.
     account_file = Path(BASE_DIR / "cookies" / "bilibili_uploader" / "account.json")
@@ -188,6 +189,7 @@ if __name__ == '__main__':
             wait_for_doing_file(video_path)   # 检测doing.txt文件是否存在，存在则等待
             folder_path = Path(video_path)    # 获取视频目录
             video_files = list(folder_path.glob("*.mp4")) # 获取文件夹中的所有mp4文件
+            video_files.sort(key=os.path.getctime, reverse=True)
             file_num = len(video_files)
             timestamps = generate_schedule_time_next_day(file_num, 1, daily_times=[16], timestamps=True)
             video_path_name = generate_filename_from_path(video_path) # 根据路径生成文件名 
