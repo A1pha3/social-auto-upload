@@ -16,11 +16,16 @@ from utils.files_times import generate_schedule_time_next_day
 def process_filename(video_file):
     """提取用于测试的文件名处理逻辑
     
+    文件名格式通常为 '实际标题_ytvid标识符_其他信息.mp4'
+    或者 'AAA_BBB_CCC_DDDD_ytvid11_yyyy.mp4' 等包含多个下划线的形式。
+    此函数会提取YouTube视频ID标识符(_ytvid)前的全部内容。
+    如果文件名中没有找到这种模式，则使用整个文件名（去除路径和扩展名）。
+    
     Args:
         video_file (str): 文件路径或文件名
         
     Returns:
-        str: 处理后的文件名，去除扩展名和最后一个下划线后缀
+        str: 处理后的文件名，仅保留YouTube视频ID标识前的部分
     """
     # 规范化路径分隔符，确保跨平台兼容性
     video_file = video_file.replace('\\', '/')
@@ -28,11 +33,24 @@ def process_filename(video_file):
     # 获取基本文件名（不含路径和扩展名）
     base_name = os.path.splitext(os.path.basename(video_file))[0]
     
-    # 处理下划线情况
+    # 处理YouTube视频ID标识情况 - 寻找"_ytvid"模式
+    ytvid_index = base_name.find('_ytvid')
+    
+    if ytvid_index != -1:
+        # 获取YouTube视频ID标识前的部分
+        title_part = base_name[:ytvid_index]
+        # 特殊情况：如果分割后左侧为空，保留原始基本名
+        return title_part if title_part else base_name
+    
+    # 如果没有找到YouTube视频ID模式，尝试查找任意11位数字/字母组合的模式
+    # 可以使用正则表达式来匹配，但这里用一个简化的方法
     if '_' in base_name:
-        parts = base_name.rsplit('_', 1)
-        # 特殊情况：如果分割后左侧为空（例如 _.mp4），保留原始基本名
-        return parts[0] if parts[0] else base_name
+        # 如果找到下划线，查找可能是11位视频ID的部分
+        parts = base_name.split('_')
+        for i in range(len(parts)-1):
+            # 检查是否为典型的视频ID模式：长度为11并且是字母数字组合
+            if len(parts[i+1]) == 11 and parts[i+1].isalnum():
+                return '_'.join(parts[:i+1])
     
     return base_name
 
