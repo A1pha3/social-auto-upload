@@ -4,7 +4,7 @@ import sys
 
 # 添加项目根目录到Python路径，确保可以导入模块
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from examples.upload_video_to_bilibili import process_filename
+from utils.files_times import process_filename
 
 class TestFilenameProcessing(unittest.TestCase):
     def test_standard_cases(self):
@@ -55,6 +55,8 @@ class TestFilenameProcessing(unittest.TestCase):
             ("中文文件名_测试版.mp4", "中文文件名"),
             ("file with spaces_v1.mp4", "file with spaces"),
             ("特殊字符!@#$%^&()_version.mp4", "特殊字符!@#$%^&()"),
+            # 添加问题文件名测试用例
+            ("特斯拉出了个啥财报？【2025-04-22】_x7VR7CzcopQ.mp4", "特斯拉出了个啥财报？【2025-04-22】"),
         ]
 
         for filename, expected in test_cases:
@@ -101,6 +103,24 @@ class TestFilenameProcessing(unittest.TestCase):
             ("document_final.txt.bak", "document"),
         ]
 
+        for filename, expected in test_cases:
+            with self.subTest(filename=filename):
+                result = process_filename(filename)
+                self.assertEqual(result, expected, f"File '{filename}' should process to '{expected}', got '{result}'")
+        
+    def test_youtube_id_patterns(self):
+        """测试不同形式的YouTube ID模式"""
+        test_cases = [
+            # 标准YouTube视频ID格式
+            ("视频名称_x7VR7CzcopQ.mp4", "视频名称"),
+            # 使用ytvid前缀的格式
+            ("标题_ytvid123456789_其他信息.mp4", "标题"),
+            # 复杂文件名带特殊字符和YouTube ID
+            ("特斯拉出了个啥财报？【2025-04-22】_x7VR7CzcopQ.mp4", "特斯拉出了个啥财报？【2025-04-22】"),
+            # 包含多个下划线，后面是YouTube ID
+            ("AAA_BBB_CCC_DDDD_x7VR7CzcopQ.mp4", "AAA_BBB_CCC_DDDD"),
+        ]
+        
         for filename, expected in test_cases:
             with self.subTest(filename=filename):
                 result = process_filename(filename)

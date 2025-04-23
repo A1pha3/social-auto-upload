@@ -10,49 +10,11 @@ from pathlib import Path
 from uploader.bilibili_uploader.main import read_cookie_json_file, extract_keys_from_json, BilibiliUploader
 from conf import BASE_DIR
 from utils.constant import VideoZoneTypes
-#from utils.files_times import get_title_and_hashtags
-from utils.files_times import generate_schedule_time_next_day 
-
-def process_filename(video_file):
-    """提取用于测试的文件名处理逻辑
-    
-    文件名格式通常为 '实际标题_ytvid标识符_其他信息.mp4'
-    或者 'AAA_BBB_CCC_DDDD_ytvid11_yyyy.mp4' 等包含多个下划线的形式。
-    此函数会提取YouTube视频ID标识符(_ytvid)前的全部内容。
-    如果文件名中没有找到这种模式，则使用整个文件名（去除路径和扩展名）。
-    
-    Args:
-        video_file (str): 文件路径或文件名
-        
-    Returns:
-        str: 处理后的文件名，仅保留YouTube视频ID标识前的部分
-    """
-    # 规范化路径分隔符，确保跨平台兼容性
-    video_file = video_file.replace('\\', '/')
-    
-    # 获取基本文件名（不含路径和扩展名）
-    base_name = os.path.splitext(os.path.basename(video_file))[0]
-    
-    # 处理YouTube视频ID标识情况 - 寻找"_ytvid"模式
-    ytvid_index = base_name.find('_ytvid')
-    
-    if ytvid_index != -1:
-        # 获取YouTube视频ID标识前的部分
-        title_part = base_name[:ytvid_index]
-        # 特殊情况：如果分割后左侧为空，保留原始基本名
-        return title_part if title_part else base_name
-    
-    # 如果没有找到YouTube视频ID模式，尝试查找任意11位数字/字母组合的模式
-    # 可以使用正则表达式来匹配，但这里用一个简化的方法
-    if '_' in base_name:
-        # 如果找到下划线，查找可能是11位视频ID的部分
-        parts = base_name.split('_')
-        for i in range(len(parts)-1):
-            # 检查是否为典型的视频ID模式：长度为11并且是字母数字组合
-            if len(parts[i+1]) == 11 and parts[i+1].isalnum():
-                return '_'.join(parts[:i+1])
-    
-    return base_name
+from utils.files_times import (
+    generate_schedule_time_next_day,
+    process_video_title,
+    generate_filename_from_path
+)
 
 def wait_for_doing_file(video_path):
     """
@@ -162,59 +124,6 @@ def parse_config_file(config_file_path):
         return None 
     return video_path_set
 
-def generate_filename_from_path(file_path):
-    """
-    根据文件路径生成文件名，处理特殊路径情况。
-    Args:
-        file_path (str): 文件路径，例如 "/damon/sun", "/damon/sun/shorts", "/damon/sun/videos"。
-    Returns:
-        str: 生成的文件名，例如 "sun.txt", "sun_shorts.txt", "sun_videos.txt"。
-             如果路径为空或无法处理，则返回 None。
-    """
-    if not file_path:
-        return None  # 处理空路径的情况
-
-    file_path = file_path.strip('/') # 去除路径首尾的斜杠，避免影响basename和dirname的处理
-
-    base_name = os.path.basename(file_path) # 获取路径的最后部分，例如 "sun", "shorts", "videos"
-    dir_name = os.path.dirname(file_path)  # 获取路径的目录部分，例如 "/damon/sun", "/damon/sun"
-
-    if not dir_name:
-        return base_name # 处理类似 "sun" 这种没有目录的情况
-
-    parent_dir_name = os.path.basename(dir_name) # 获取父目录的名字, 例如 "sun", "damon"
-
-    if base_name == "shorts":
-        return f"{parent_dir_name}_shorts" #  处理 /damon/sun/shorts 情况
-    elif base_name == "videos":
-        return f"{parent_dir_name}_videos" #  处理 /damon/sun/videos 情况
-    else:
-        return base_name #  默认情况，使用basename作为文件名
-
-def truncate_title_string(s):
-    """截断过长的标题字符串
-    
-    Args:
-        s (str): 原始字符串
-        
-    Returns:
-        str: 截断后的字符串，最大长度为80
-    """
-    if len(s) > 80:
-        return s[:80]
-    return s
-
-def process_video_title(video_file):
-    """从视频文件名生成格式化的视频标题
-    
-    Args:
-        video_file (str): 视频文件路径或文件名
-        
-    Returns:
-        str: 处理并截断后的视频标题
-    """
-    base_name = process_filename(video_file)
-    return truncate_title_string(base_name)
 
 if __name__ == '__main__':
     # 创建命令行参数解析器
