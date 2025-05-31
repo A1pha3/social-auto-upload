@@ -97,7 +97,7 @@ def process_filename(video_file):
     base_name = os.path.splitext(os.path.basename(video_file))[0]
     
     # 方法1: 先尝试查找"_ytvid"模式
-    ytvid_index = base_name.find('_ytvid')
+    ytvid_index = base_name.find('_ytvid11_')
     if ytvid_index != -1:
         # 获取YouTube视频ID标识前的部分
         title_part = base_name[:ytvid_index]
@@ -117,9 +117,6 @@ def process_filename(video_file):
 def truncate_title_string(s):
     """从文件名中提取标题部分并截断过长的字符串
     
-    文件名格式通常为 '实际标题_ytvid标识符_其他信息.mp4'
-    此函数会提取第一个下划线 '_' 前面的部分作为标题。
-    如果文件名中没有下划线，则使用整个文件名（去除扩展名后）。
     最后，确保标题长度不超过80个字符。
 
     Args:
@@ -128,23 +125,11 @@ def truncate_title_string(s):
     Returns:
         str: 提取并截断后的标题字符串，最大长度为80
     """
-    # 尝试去除常见视频文件扩展名
-    base_name = re.sub(r'\.(mp4|avi|mov|mkv|flv|wmv)$', '', s, flags=re.IGNORECASE)
-
-    # 查找第一个下划线
-    underscore_index = base_name.find('_')
-
-    if underscore_index != -1:
-        # 如果找到下划线，取之前的部分
-        title_part = base_name[:underscore_index]
-    else:
-        # 如果没有下划线，使用去除扩展名后的整个基础名称
-        title_part = base_name
-
+    
     # 截断标题至80个字符
-    if len(title_part) > 80:
-        return title_part[:80]
-    return title_part
+    if len(s) > 80:
+        return s[:80]
+    return s
 
 
 def process_video_title(video_file):
