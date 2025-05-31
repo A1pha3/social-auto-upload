@@ -11,7 +11,11 @@ from uploader.bilibili_uploader.main import read_cookie_json_file, extract_keys_
 from conf import BASE_DIR
 from utils.constant import VideoZoneTypes
 #from utils.files_times import get_title_and_hashtags
-from utils.files_times import generate_schedule_time_next_day 
+from utils.files_times import (
+        generate_schedule_time_next_day,
+        process_video_title,
+        generate_filename_from_path
+)
 
 def wait_for_doing_file(video_path):
     """
@@ -119,6 +123,8 @@ def parse_config_file(config_file_path):
     else:
         print(f"错误: 配置文件不存在: {config_file_path}")
         return None 
+
+    print(f"-------process video_path_set：{video_path_set}-----done-------\n")
     return video_path_set
 
 def generate_filename_from_path(file_path):
@@ -163,11 +169,12 @@ if __name__ == '__main__':
     args = parser.parse_args() # 解析命令行参数
     config_file_path = args.config_file # 获取命令行参数指定的视频文件夹路径
 
-    video_path_set = parse_config_file(config_file_path) # 解析配置文件，获取视频文件路径集合
 
-    #sleep_time = 1388 # 设置休眠时间为3588秒 (约59分钟)
-    sleep_time = 10368 # 设置休眠时间约2.88 Hour
+    #sleep_time = 1388 # 设置休眠时间为1388秒 (约59分钟)
+    #sleep_time = 10368 # 设置休眠时间约2.88 Hour
+    #sleep_time = 13968 # 设置休眠时间约3.88 Hour
     #sleep_time = 23976 # 设置休眠时间为23976秒 (约6.66Hour)
+    sleep_time = 666 * 6
     # how to get cookie, see the file of get_bilibili_cookie.py.
     account_file = Path(BASE_DIR / "cookies" / "bilibili_uploader" / "account.json")
     if not account_file.exists():
@@ -179,19 +186,21 @@ if __name__ == '__main__':
     cookie_data = extract_keys_from_json(cookie_data)
     tid = VideoZoneTypes.TECH_COMPUTER_TECH.value  # 设置分区id
     tags = ["#区块链", "#blockchain", "#cryptocoin", "#数字货币", "#加密货币"]
+    #tags = ["#AI教程", "#AI视频制作", "#AI视频", "#AI技术", "#AI视频教程"]
     #tags = ["#佩奇", "#儿童动画 ", "#启蒙早教 ", "#英语启蒙 ", "#peppapig"]
     #tags = ["#热舞", "#健康减脂 ", "#完美身材 ", "#火爆现场 ", "#拉拉队美女 "]
     tags_str = ','.join([tag for tag in tags])
     print(f"Zone Type: {tid} Hashtag：{tags}")
     print("-----程序启动，开始循环检测...") # 打印程序启动信息
     while True: # 无限循环，持续执行文件上传逻辑
+        video_path_set = parse_config_file(config_file_path) # 解析配置文件，获取视频文件路径集合
         for video_path in video_path_set:
             wait_for_doing_file(video_path)   # 检测doing.txt文件是否存在，存在则等待
             folder_path = Path(video_path)    # 获取视频目录
             video_files = list(folder_path.glob("*.mp4")) # 获取文件夹中的所有mp4文件
-            video_files.sort(key=os.path.getctime, reverse=True)
+            #video_files.sort(key=os.path.getctime, reverse=True)
+            video_files.sort(key=os.path.getctime)
             file_num = len(video_files)
-            timestamps = generate_schedule_time_next_day(file_num, 1, daily_times=[16], timestamps=True)
             video_path_name = generate_filename_from_path(video_path) # 根据路径生成文件名 
             up_done_files = load_up_done_files(video_path_name) # 读取updone.txt，加载已处理的文件名列表
             if not up_done_files:
@@ -209,11 +218,10 @@ if __name__ == '__main__':
                     #title, tags = get_title_and_hashtags(str(file))
                     # just avoid error, bilibili don't allow same title of video.
                     #title += random_emoji()
-                    title = truncate_title_string(title)
+                    title = process_video_title(title)
                     print(f"上传视频文件名：{filename} 标题：{title}")
                     # I set desc same as title, do what u like.
                     desc = title
-                    #bili_uploader = BilibiliUploader(cookie_data, file, title, desc, tid, tags, timestamps[index])
                     bili_uploader = BilibiliUploader(cookie_data, video_file, title, desc, tid, tags, None)
                     bili_uploader.upload()
                     update_up_done_file(filename, video_path_name) # 处理成功，更新updone.txt文件
@@ -224,6 +232,6 @@ if __name__ == '__main__':
                 #    print(f"文件 {filename} 已处理过，跳过。") # 打印文件已处理信息
 
             print(f"-------process video_path：{video_path}-----done-------\n")
-        print(f"所有文件处理完成，休眠1小时... {time.strftime('%Y-%m-%d %H:%M:%S')}") # 打印休眠信息和当前时间
-        time.sleep(1 * 3600) # 休眠1小时 (1 * 60 * 60 秒)
+        print(f"所有文件处理完成，休眠{sleep_time/3600} 小时... {time.strftime('%Y-%m-%d %H:%M:%S')}") # 打印休眠信息和当前时间
+        time.sleep(sleep_time) # 休眠3.88小时 
 
