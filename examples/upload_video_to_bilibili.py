@@ -173,8 +173,7 @@ if __name__ == '__main__':
                     #print(f"文件 {filename} 是临时文件，跳过。") # 打印临时文件信息
                     continue
                 if filename not in up_done_files: # 检查文件是否已处理过
-                    title = process_video_title(video_file)
-                    print(f"原始文件名处理：{os.path.basename(video_file)} → {title}")
+                    title = process_video_title(filename)
                     print(f"上传视频文件名：{filename} 标题：{title}")
                     # I set desc same as title, do what u like.
                     desc = title

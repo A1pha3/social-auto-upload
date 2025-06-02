@@ -214,11 +214,7 @@ if __name__ == '__main__':
                     #print(f"文件 {filename} 是临时文件，跳过。") # 打印临时文件信息
                     continue
                 if filename not in up_done_files: # 检查文件是否已处理过
-                    title = filename.replace(".mp4", "")
-                    #title, tags = get_title_and_hashtags(str(file))
-                    # just avoid error, bilibili don't allow same title of video.
-                    #title += random_emoji()
-                    title = process_video_title(title)
+                    title = process_video_title(filename)
                     print(f"上传视频文件名：{filename} 标题：{title}")
                     # I set desc same as title, do what u like.
                     desc = title
